@@ -48,13 +48,6 @@ La recuperación se diseñó en dos fases para garantizar la relevancia máxima 
 * **Re-ranking Semántico (Deep Search):** Aplicación de un **Cross-Encoder** (`ms-marco-MiniLM-L-6-v2`) para re-evaluar la relevancia de esos 15 fragmentos, filtrando cualquier contexto que no aporte valor real antes de enviarlo al LLM.
 * **Umbral de Calidad:** Se aplica un filtro estricto de score. Si ningún fragmento supera este umbral, el sistema declara que no tiene información suficiente antes de arriesgarse a alucinar.
 
-### 4. Prompt Engineering y Generación
-El motor (`src/query_rag.py`) utiliza un protocolo de verificación robusto:
-* **Estructura XML:** Los fragmentos se inyectan en etiquetas `<DOCUMENT>` con metadatos de página y capítulo para evitar confusiones de contexto.
-* **Thought Process (CoV):** El prompt obliga al modelo a razonar antes de responder (identificar conceptos, verificar presencia en fragmentos y emitir citaciones obligatorias `[Page X]`).
-* **Temperatura 0:** Configurada para máxima consistencia y fidelidad técnica (OllamaLLM).
-
-
 ### 3. Prompt Engineering y Generación
 El motor (`src/query_rag.py`) utiliza un protocolo de verificación robusto:
 * **Estructura XML:** Los fragmentos se inyectan en etiquetas `<DOCUMENT>` con metadatos de página y capítulo para evitar confusiones de contexto.
