@@ -39,6 +39,7 @@ El núcleo del proyecto reside en cómo se preparan y recuperan los datos técni
 Para manejar la complejidad del libro ISLR, utilicé `PyMuPDF4LLM` combinado con lógica personalizada para:
 * **Extracción de Fórmulas y LaTeX:** A diferencia de otros extractores, este flujo preserva la sintaxis matemática, permitiendo que el modelo comprenda las ecuaciones sin errores de caracteres extraños.
 * **Análisis de Estructura Jerárquica:** El sistema mapea la Tabla de Contenidos (TOC) para inyectar metadatos de `Capítulo`, `Subcapítulo` y `Sección` en cada fragmento.
+* **Filtrado de Ruido Semántico:** Se implementó una lógica para **eliminar el Índice Alfabético y la Tabla de Contenidos** del cuerpo del texto indexado. Esto evita que el motor de búsqueda recupere listas de temas sin contenido explicativo, mejorando drásticamente la precisión del contexto.
 * **Limpieza Especializada:** Se eliminan ruidos de edición (DOIs, copyright) que suelen ensuciar los embeddings.
 
 ### 2. Recuperación de Dos Pasos (Two-Pass Retrieval)
