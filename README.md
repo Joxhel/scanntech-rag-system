@@ -6,7 +6,7 @@
 
 ## 🚀 Resumen del Proyecto
 
-Este sistema nace de la necesidad de transformar el libro *"An Introduction to Statistical Learning" (ISL)* en un asistente técnico inteligente. El objetivo principal fue construir un ecosistema que no solo responda preguntas técnicas con precisión, sino que ofrezca **transparencia total** sobre las fuentes consultadas y mantenga un **control de calidad riguroso** mediante métricas automatizadas.
+Este sistema transforma el libro *"An Introduction to Statistical Learning" (ISL)* en un asistente técnico inteligente. El objetivo principal fue construir un ecosistema que no solo responda preguntas técnicas con precisión, sino que ofrezca **transparencia total** sobre las fuentes consultadas y mantenga un **control de calidad riguroso** mediante métricas automatizadas.
 
 A lo largo del desarrollo, implementé una arquitectura basada en tres pilares:
 * **Recuperación Semántica Avanzada:** Uso de un flujo de dos pasos (Retrieval + Re-ranking) para asegurar que el modelo trabaje solo con la información más pertinente.
@@ -26,12 +26,12 @@ La interfaz en Streamlit prioriza la experiencia del usuario. El panel lateral m
 ![Streamlit Dashboard](assets/sidebar_observability.gif)
 
 ### 3. Rendimiento y Métricas RAGAS
-El sistema genera reportes visuales tras cada evaluación masiva, facilitando la identificación de puntos de mejora en la fidelidad y relevancia de las respuestas.
+El sistema genera reportes visuales y descriptivos tras cada evaluación. Además de los benchmarks, el sistema es capaz de **analizar las interacciones reales de los usuarios almacenadas en logs**, calculando métricas de fidelidad mediante una comparativa directa entre el contexto recuperado y la respuesta generada, asegurando una mejora continua basada en datos de uso real.
 ![Métricas de Rendimiento](assets/ragas_metrics.png)
 
 ---
 
-## 🏗️ Arquitectura y Preprocesamiento Avanzado
+## 🏗️ Arquitectura y Preprocesamiento
 
 El núcleo del proyecto reside en cómo se preparan y recuperan los datos técnicos. Aquí detallo las decisiones clave en `src/ingestion.py`, `src/query_rag.py` y `src/evaluator.py`:
 
@@ -42,14 +42,38 @@ Para manejar la complejidad del libro ISLR, utilicé `PyMuPDF4LLM` combinado con
 * **Limpieza Especializada:** Se eliminan ruidos de edición (DOIs, copyright) que suelen ensuciar los embeddings.
 
 ### 2. Recuperación de Dos Pasos (Two-Pass Retrieval)
+La recuperación se diseñó en dos fases para garantizar la relevancia máxima del contexto:
 * **Búsqueda Vectorial (Broad Search):** Recuperación inicial de 15 fragmentos usando `nomic-ai/nomic-embed-text-v1.5`.
-* **Re-ranking Semántico (Deep Search):** Aplicación de un **Cross-Encoder** (`ms-marco`) para re-evaluar la relevancia de esos 15 fragmentos, filtrando cualquier contexto que no aporte valor real antes de enviarlo al LLM.
+* **Re-ranking Semántico (Deep Search):** Aplicación de un **Cross-Encoder** (`ms-marco-MiniLM-L-6-v2`) para re-evaluar la relevancia de esos 15 fragmentos, filtrando cualquier contexto que no aporte valor real antes de enviarlo al LLM.
+* **Umbral de Calidad:** Se aplica un filtro estricto de score. Si ningún fragmento supera este umbral, el sistema declara que no tiene información suficiente antes de arriesgarse a alucinar.
 
-### 3. Evaluación y Sanitización Técnica
-Para garantizar la fiabilidad de las métricas de **RAGAS**, implementé un flujo de evaluación especializado:
+### 4. Prompt Engineering y Generación
+El motor (`src/query_rag.py`) utiliza un protocolo de verificación robusto:
+* **Estructura XML:** Los fragmentos se inyectan en etiquetas `<DOCUMENT>` con metadatos de página y capítulo para evitar confusiones de contexto.
+* **Thought Process (CoV):** El prompt obliga al modelo a razonar antes de responder (identificar conceptos, verificar presencia en fragmentos y emitir citaciones obligatorias `[Page X]`).
+* **Temperatura 0:** Configurada para máxima consistencia y fidelidad técnica (OllamaLLM).
+
+
+### 3. Prompt Engineering y Generación
+El motor (`src/query_rag.py`) utiliza un protocolo de verificación robusto:
+* **Estructura XML:** Los fragmentos se inyectan en etiquetas `<DOCUMENT>` con metadatos de página y capítulo para evitar confusiones de contexto.
+* **Thought Process (CoV):** El prompt obliga al modelo a razonar antes de responder (identificar conceptos, verificar presencia en fragmentos y emitir citaciones obligatorias `[Page X]`).
+* **Temperatura 0:** Configurada para máxima consistencia y fidelidad técnica (OllamaLLM).
+
+### 4. Evaluación (RAGAS Framework)
+Para garantizar la fiabilidad de las métricas de **RAGAS**, implementé un flujo de evaluación:
 * **Juez Especializado:** Se utiliza `llama3.1:8b` como juez evaluador por su capacidad superior para seguir instrucciones complejas en comparación con modelos más pequeños.
 * **Sanitización de Datos:** Desarrollé una lógica que convierte bloques de código y fórmulas complejas en tokens simplificados (`[MATH_BLOCK]`) antes de la evaluación. Esto evita que el juez se distraiga con la sintaxis de LaTeX y se enfoque puramente en la fidelidad semántica de la respuesta.
 * **Métricas Core:** El sistema mide continuamente *Faithfulness*, *Answer Relevancy*, *Context Precision* y *Context Recall*.
+
+Se ejecutó un benchmark maestro sobre preguntas técnicas donde:
+
+| Métrica | Resultado | Justificación Técnica |
+| :--- | :--- | :--- |
+| **Faithfulness** | **0.76** | Representa la capacidad del modelo para mantenerse fiel al contexto recuperado sin alucinar. |
+| **Answer Relevancy** | **0.86** | Indica qué tan directa y útil es la respuesta para la consulta del usuario. |
+| **Context Precision** | **0.87** | El Re-ranker posiciona los mejores datos en los primeros lugares de forma efectiva. |
+| **Context Recall** | **0.81** | El sistema localiza la información necesaria en el 81% de los casos complejos del benchmark. |
 
 ---
 
@@ -141,7 +165,24 @@ streamlit run app.py
 ```
 
 ---
+## 🚀 Trabajo Futuro y Escalabilidad (Roadmap)
 
+Para evolucionar este sistema hacia un entorno de producción de alta disponibilidad, se proponen las siguientes mejoras estratégicas:
+
+1. **Optimización de Recuperación (Query Transformation):**
+   * **Query Rewriting:** Implementar un paso previo donde un LLM interprete y limpie la intención del usuario antes de la consulta vectorial.
+   * **HyDE (Hypothetical Document Embeddings):** Generar respuestas hipotéticas para capturar fragmentos semánticamente similares con mayor precisión.
+
+2. **Arquitectura GraphRAG:**
+   * Migrar a una base de datos de grafos (**Neo4j**) para conectar conceptos transversales del libro que no están cerca físicamente (ej. relacionar técnicas de *Regularización* en el Cap. 6 con su aplicación en *SVM* en el Cap. 9).
+
+3. **Transición a Modelos Cloud:**
+   * Integración opcional mediante API con **Gemini 1.5 Pro** o **GPT-4o** para consultas de "borde" que requieran un razonamiento matemático extremo o síntesis de múltiples capítulos.
+
+4. **Refinamiento de Inferencia Local (Prompt Tuning):**
+   * Ajustar iterativamente el `Prompt Template` utilizado en `OllamaLLM` para optimizar el uso de la ventana de contexto y mejorar la asimilación de instrucciones de formato específicas del dominio estadístico.
+---
 ## 🛡️ License & Contact
 
 Desarrollado por [**Jose Luis Cabrera Vega**](https://www.linkedin.com/in/josecabrerav) para el proceso de selección de **Scanntech**.
+
