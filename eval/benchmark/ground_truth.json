@@ -1,0 +1,74 @@
+[
+  {
+    "question": "What is the difference between supervised and unsupervised learning?",
+    "ground_truth": "Supervised learning involves models where there is a specific response variable (Y) associated with each observation, used to predict or relate predictors (X) to the response. In contrast, unsupervised learning lacks a response variable, focusing on discovering patterns, structures, or groupings among the predictors themselves."
+  },
+  {
+    "question": "Explain the bias-variance tradeoff in statistical learning.",
+    "ground_truth": "The bias-variance tradeoff refers to the conflict in trying to simultaneously minimize two sources of error that prevent supervised learning algorithms from generalizing beyond their training set. Bias error comes from overly simple assumptions; variance error comes from over-sensitivity to small fluctuations in the training set. Increasing model flexibility typically decreases bias but increases variance."
+  },
+  {
+    "question": "What is the primary advantage of Lasso regression over Ridge regression?",
+    "ground_truth": "The primary advantage of Lasso regression (L1 penalty) over Ridge regression (L2 penalty) is that Lasso can perform variable selection by forcing some coefficient estimates to be exactly equal to zero when the tuning parameter lambda is sufficiently large, resulting in a simpler, more interpretable model."
+  },
+  {
+    "question": "What is the Curse of Dimensionality in the context of K-Nearest Neighbors?",
+    "ground_truth": "The curse of dimensionality refers to the fact that as the number of predictors increases, the volume of the feature space grows exponentially. In high dimensions, data points become isolated, and the concept of 'nearest' neighbors loses meaning because all points become almost equidistant, degrading the performance of distance-based methods like KNN."
+  },
+  {
+    "question": "Define the Bayes classifier and its significance.",
+    "ground_truth": "The Bayes classifier is a theoretical ideal that assigns each observation to the most likely class, given its predictor values. It minimizes the total error rate. While the true conditional distribution is unknown in practice, the Bayes classifier serves as a gold standard benchmark for other classification methods."
+  },
+  {
+    "question": "What is the difference between Parametric and Non-parametric methods?",
+    "ground_truth": "Parametric methods assume a specific functional form for the model (like linear regression), requiring only the estimation of parameters. Non-parametric methods do not make explicit assumptions about the form of the function, allowing them to potentially fit a wider range of shapes, but they generally require a much larger number of observations."
+  },
+  {
+    "question": "Explain the concept of 'Pruning' in decision trees.",
+    "ground_truth": "Pruning is the process of reducing the size of a decision tree by removing branches that provide little predictive power. This is done to prevent overfitting, as very large trees tend to follow noise in the training data. Cost complexity pruning is a common technique used to find the optimal subtree."
+  },
+  {
+    "question": "What is Bagging (Bootstrap Aggregating) and how does it reduce variance?",
+    "ground_truth": "Bagging is an ensemble method that generates multiple training sets using the bootstrap (sampling with replacement) and trains a separate model on each. By averaging the resulting predictions, Bagging reduces the variance of the overall model without significantly increasing bias."
+  },
+  {
+    "question": "How do Random Forests improve upon standard Bagging?",
+    "ground_truth": "Random Forests improve upon Bagging by decorrelating the trees. At each split in a tree, only a random subset of predictors is considered. This prevents a single very strong predictor from dominating all trees, leading to a more diverse ensemble and a further reduction in variance."
+  },
+  {
+    "question": "Describe the main idea behind Boosting.",
+    "ground_truth": "Boosting is an iterative approach where models are trained sequentially. Each new model attempts to correct the errors made by the previous models by fitting the residuals. Unlike Bagging, which works in parallel, Boosting learns slowly to improve performance and reduce bias."
+  },
+  {
+    "question": "What is Principal Component Analysis (PCA) used for?",
+    "ground_truth": "PCA is an unsupervised technique used for dimensionality reduction and data visualization. It finds a low-dimensional representation of the data that captures as much of the variance as possible by creating linear combinations of the original features."
+  },
+  {
+    "question": "In classification, what does a Confusion Matrix represent?",
+    "ground_truth": "A confusion matrix is a table used to describe the performance of a classification model. It displays the counts of True Positives, True Negatives, False Positives, and False Negatives, allowing for the calculation of metrics like sensitivity, specificity, and precision."
+  },
+  {
+    "question": "What is the 'Local' property of K-Nearest Neighbors?",
+    "ground_truth": "The local property refers to the fact that KNN makes predictions for a point based solely on the observations that are closest to it in the feature space. It does not assume a global structure for the data, making it a highly flexible, non-parametric approach."
+  },
+  {
+    "question": "What is 'Maximum Margin' in the context of Support Vector Classifiers?",
+    "ground_truth": "The maximum margin is the largest distance between the separating hyperplane and the closest training observations (support vectors). The Support Vector Classifier seeks to find the hyperplane that maximizes this margin to ensure better generalization to new data."
+  },
+  {
+    "question": "What is the False Discovery Rate (FDR) in multiple testing?",
+    "ground_truth": "The False Discovery Rate is the expected proportion of rejected null hypotheses that are actually true (false positives). Controlling the FDR is a less conservative approach than controlling the Family-Wise Error Rate (FWER), making it useful when dealing with a large number of simultaneous tests."
+  },
+  {
+  "question": "Explain in detail the decomposition of the expected test error in terms of the bias-variance tradeoff.",
+  "ground_truth": "The expected test error for a given observation x_0 can be mathematically decomposed into the sum of three fundamental terms: the variance of the learning method f_hat(x_0), the squared bias of f_hat(x_0), and the variance of the irreducible error term epsilon. Variance refers to the amount by which f_hat would change if it were estimated using a different training data set, while bias refers to the error introduced by approximating a real-life problem with a much simpler model. To minimize the total expected error, one must find a level of model flexibility that balances these two components, as increasing flexibility typically increases variance and decreases bias. (ISLRv2, pp. 41-43)"
+  },
+  {
+  "question": "What is the fundamental technical distinction between Lasso's L1 penalty and Ridge's L2 penalty regarding variable selection?",
+  "ground_truth": "The primary difference lies in the geometric shape of the penalty. Ridge regression uses an L2 penalty (the sum of squared coefficients), which shrinks coefficients toward zero but never sets them exactly to zero, meaning all variables are retained in the final model. In contrast, Lasso regression uses an L1 penalty (the sum of absolute values), whose diamond-shaped constraint region allows some estimated coefficients to be exactly zero when the tuning parameter lambda is sufficiently large. This gives Lasso the unique ability to perform automatic variable selection, resulting in sparse models that are significantly easier to interpret. (ISLRv2, pp. 240-245)"
+  },
+  {
+  "question": "Define the concept of the maximal margin hyperplane and explain the specific role of support vectors.",
+  "ground_truth": "The maximal margin hyperplane is the unique separating hyperplane that is farthest from the training observations of each class. The distance from the hyperplane to the nearest observations is defined as the margin. Support vectors are the specific observations that lie directly on the margin (or on the wrong side of the margin in soft-margin classifiers). The position of the hyperplane depends strictly on these support vectors; if any observation that is not a support vector were moved or removed, the hyperplane would remain unchanged, making it a robust boundary for class separation. (ISLRv2, pp. 371-373)"
+  }
+]

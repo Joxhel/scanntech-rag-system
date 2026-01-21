@@ -1,0 +1,17 @@
+# Entorno virtual
+.venv/
+
+# Respaldo personal
+Backup/
+
+# Archivos de Python (Caché)
+**/__pycache__/
+*.py[cod]
+
+# Variables de entorno (Credenciales/API Keys)
+.env
+
+# Documentación del reto (Confidencialidad)
+GenAI Challenge.docx
+GenAI Challenge.pdf
+ground_truth copy.json
